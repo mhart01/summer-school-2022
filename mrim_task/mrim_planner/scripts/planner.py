@@ -43,18 +43,18 @@ class MrimPlanner:
         self._smoothing_distance       = rospy.get_param('~path_smoothing/lookahead_dist', 0.3)
         self._sample_with_stops        = rospy.get_param('~trajectory_sampling/with_stops', True)
         self._global_frame             = rospy.get_param('~global_frame', "gps_origin")
-        self._tsp_clustering_method    = rospy.get_param('~tsp/clustering', 'random')
+        self._tsp_clustering_method    = rospy.get_param('~tsp/clustering', 'kmeans')
 
         ## | ---------------- setup collision avoidance --------------- |
         self._safety_distance_mutual = rospy.get_param('~trajectories/min_distance/mutual')
-        self._collision_avoidance    = rospy.get_param('~collision_avoidance/method', 'none')
+        self._collision_avoidance    = rospy.get_param('~collision_avoidance/method', 'delay_2nd_till_1st_UAV_finishes')
 
         ## | ------------------- setup path planner ------------------- |
         self._path_planner = {}
         self._path_planner['timeout']                       = rospy.get_param('~path_planner/timeout', 1.0)
-        self._path_planner['path_planning_method']          = rospy.get_param('~path_planner/method', 'rrt')
+        self._path_planner['path_planning_method']          = rospy.get_param('~path_planner/method', 'astar')
         self._path_planner['safety_distance']               = rospy.get_param('~trajectories/min_distance/obstacles')
-        self._path_planner['distance_estimation_method']    = rospy.get_param('~tsp/distance_estimates', 'euclidean')
+        self._path_planner['distance_estimation_method']    = rospy.get_param('~tsp/distance_estimates', 'astar')
         self._path_planner['straighten']                    = rospy.get_param('~path_planner/straighten_paths')
 
         pp_method = self._path_planner['path_planning_method']
