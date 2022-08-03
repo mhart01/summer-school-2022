@@ -17,6 +17,8 @@ from path_planners.sampling_based.rrt import RRT
 
 from solvers.LKHInvoker import LKHInvoker
 
+
+
 class TSPSolver3D():
 
     ALLOWED_PATH_PLANNERS               = ('euclidean', 'astar', 'rrt', 'rrtstar')
@@ -272,17 +274,20 @@ class TSPSolver3D():
             # Tips:
             #  - utilize sklearn.cluster.KMeans implementation (https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html)
             #  - after finding the labels, you may want to swap the classes (e.g., by looking at the distance of the UAVs from the cluster centers)
-            kmeans = sklearn.cluster.Kmeans(n_clusters=k)
-            cc1, cc2 = kmeans.cluster_centers_[0]
+            kmeans = KMeans(n_clusters=2).fit(positions)
+            cc1, cc2 = kmeans.cluster_centers_[0], kmeans.cluster_centers_[1]
+
             pr1, pr2 = problem.start_poses
-            cd11 = distEuclidean(cc1, pr1) + distEuclidean(cc2, pr2)
-            cd22 = distEuclidean(cc2, pr1) + distEuclidean(cc1, pr2)
+            pr1 = [pr1.position.x, pr1.position.y, pr1.position.z]
+            pr2 = [pr2.position.x, pr2.position.y, pr2.position.z]
+            cd11 = distEuclidean(cc1.tolist(), pr1) + distEuclidean(cc2.tolist(), pr2)
+            cd22 = distEuclidean(cc2.tolist(), pr1) + distEuclidean(cc1.tolist(), pr2)
 
             # TODO: fill 1D list 'labels' of size len(viewpoints) with indices of the robots
             if cd11 < cd22:
-                labels = kmeans
+                labels = kmeans.labels_
             else:
-                labels = 1-kmeans
+                labels = 1.-kmeans.labels_
 
         ## | -------------------- Random clustering ------------------- |
         else:
